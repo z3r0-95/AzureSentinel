@@ -227,8 +227,8 @@ def set_omsagent_configuration(workspace_id, omsagent_incoming_port):
 
     print("Creating omsagent configuration to listen to syslog daemon forwarding port - " + omsagent_incoming_port)
     print("Configuration location is - " + configuration_path)
-    mkdir_command_tokens = ["sudo", "mkdir", "-p", configuration_directory]
-    wget_command_tokens = ["sudo", "curl_cli", "-O", configuration_path, oms_agent_configuration_url]
+    mkdir_command_tokens = ["mkdir", "-p", configuration_directory]
+    wget_command_tokens = ["curl_cli", "-O", configuration_path, oms_agent_configuration_url]
     print("Download configuration into the correct directory")
     print_notice(" ".join(mkdir_command_tokens))
     print_notice(" ".join(wget_command_tokens))
@@ -284,7 +284,7 @@ def set_rsyslog_new_configuration():
                         fout.write(line)
                 else:
                     fout.write(line)
-    command_tokens = ["sudo", "mv", "tmp.txt", rsyslog_conf_path]
+    command_tokens = ["mv", "tmp.txt", rsyslog_conf_path]
     write_new_content = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
     o, e = write_new_content.communicate()
@@ -296,7 +296,7 @@ def set_rsyslog_new_configuration():
 
 
 def append_content_to_file(line, file_path, overide = False):
-    command_tokens = ["sudo", "bash", "-c", "printf '" + "\n" + line + "' >> " + file_path] if not overide else ["sudo", "bash", "-c", "printf '" + "\n" + line + "' > " + file_path]
+    command_tokens = ["bash", "-c", "printf '" + "\n" + line + "' >> " + file_path] if not overide else ["bash", "-c", "printf '" + "\n" + line + "' > " + file_path]
     write_new_content = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
     o, e = write_new_content.communicate()
@@ -312,7 +312,7 @@ def set_file_read_permissions(file_path):
     :param  file_path: the path to change the permissions for
     :return: True if successfully added read permissions to other in file otherwise false
     """
-    command_tokens = ["sudo", "chmod", "o+r", file_path]
+    command_tokens = ["chmod", "o+r", file_path]
     change_permissions = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
     o, e = change_permissions.communicate()
@@ -393,7 +393,7 @@ def change_omsagent_protocol(configuration_path):
     except IOError:
         print_error("Oms-agent installation has failed please remove oms-agent and try again.")
         return False
-    command_tokens = ["sudo", "mv", "tmp.txt", configuration_path]
+    command_tokens = ["mv", "tmp.txt", configuration_path]
     write_new_content = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
     o, e = write_new_content.communicate()
@@ -416,7 +416,7 @@ def change_omsagent_configuration_port(omsagent_incoming_port, configuration_pat
         with open("tmp.txt", "wt") as fout:
             for line in fin:
                 fout.write(line.replace(omsagent_default_incoming_port, omsagent_incoming_port))
-    command_tokens = ["sudo", "mv", "tmp.txt", configuration_path]
+    command_tokens = ["mv", "tmp.txt", configuration_path]
     write_new_content = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
     o, e = write_new_content.communicate()
@@ -441,7 +441,7 @@ def check_syslog_computer_field_mapping(workspace_id):
                       " Computer field from your hostname.\nTo enable the Computer field mapping, please run: \n"
                       "\"sed -i -e \"/'Severity' => tags\[tags.size - 1\]/ a \ \\t  'Host' => record['host']\""
                       " -e \"s/'Severity' => tags\[tags.size - 1\]/&,/\" " + oms_agent_field_mapping_configuration +
-                      " && sudo /opt/microsoft/omsagent/bin/service_control restart " + workspace_id + "\"")
+                      " && /opt/microsoft/omsagent/bin/service_control restart " + workspace_id + "\"")
         return False
     else:
         print_ok("OMS Agent syslog field mapping is correct \n")
@@ -453,7 +453,7 @@ def restart_rsyslog():
     Restart the Rsyslog daemon
     '''
     print("Restarting rsyslog daemon.")
-    command_tokens = ["sudo", "service", "rsyslog", "restart"]
+    command_tokens = ["service", "rsyslog", "restart"]
     print_notice(" ".join(command_tokens))
     restart_rsyslog_command = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
@@ -470,7 +470,7 @@ def restart_syslog_ng():
     Restart the syslog-ng daemon
     '''
     print("Restarting syslog-ng daemon.")
-    command_tokens = ["sudo", "service", "syslog-ng", "restart"]
+    command_tokens = ["service", "syslog-ng", "restart"]
     print_notice(" ".join(command_tokens))
     restart_rsyslog_command = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
@@ -488,7 +488,7 @@ def restart_omsagent(workspace_id):
     :param workspace_id:
     '''
     print("Trying to restart omsagent")
-    command_tokens = ["sudo", "/opt/microsoft/omsagent/bin/service_control", "restart", workspace_id]
+    command_tokens = ["/opt/microsoft/omsagent/bin/service_control", "restart", workspace_id]
     print_notice(" ".join(command_tokens))
     restart_omsagent_command = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
@@ -576,7 +576,7 @@ def set_syslog_ng_configuration():
                     comment_line = False
                 # write line correctly
                 fout.write(line if not comment_line else ("#" + line))
-    command_tokens = ["sudo", "mv", "tmp.txt", syslog_ng_conf_path]
+    command_tokens = ["mv", "tmp.txt", syslog_ng_conf_path]
     write_new_content = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     time.sleep(3)
     o, e = write_new_content.communicate()
